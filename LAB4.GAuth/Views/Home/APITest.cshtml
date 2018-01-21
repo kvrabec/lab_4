@@ -1,0 +1,69 @@
+﻿
+@{
+    ViewData["Title"] = "APITest";
+}
+
+<h2>API Test</h2>
+<div>
+    <input class="input-sm" type="text" name="CustomerID" id="query" />
+    <button class="btn btn-default" id="button" onclick="button_click()">Search</button>
+</div>
+<div>
+    <table class="table table-bordered" id="TableCustomers">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Person ID</th>
+                <th>Account Number</th>
+                <th>rowguid</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@section Scripts
+{
+<script>
+        function sendAjax(link) {
+            $.ajax({
+                type: "GET",
+                url: link,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $('#TableCustomers > tbody').html("");
+                    $('#TableCustomers').append("<tbody>");
+                    $.each(data, function (i, item) {
+                        var rows = "<tr>" +
+                            "<td id='id'>" + item.CustomerID + "</td>" +
+                            "<td id='line1'>" + item.PersonID + "</td>" +
+                            "<td id='line2'>" + item.AccountNumber + "</td>" +
+                            "<td id='city'>" + item.rowguid + "</td>" +
+                            "</tr>";
+                        $('#TableCustomers').append(rows);
+                    });
+                    $('#TableCustomers').append("</tbody>");
+                    console.log(data);
+                },
+                failure: function (data) {
+                    alert(data.responseText + "error");
+                    console.log(data);
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                    console.log(data);
+                }
+            });
+        }
+
+        function button_click() {
+            sendAjax("https://localhost:44373/api/customers/" + $('#query').val());
+
+        };
+
+
+
+</script>
+}
+
+
