@@ -79,6 +79,7 @@ namespace LAB4.MODEL.Entities
         // Unable to generate entity type for table 'Production.ProductDocument'. Please see the warning messages.
         // Unable to generate entity type for table 'Production.Document'. Please see the warning messages.
 
+        public StoreDbContext() : base(){ }
 
         public StoreDbContext(DbContextOptions<StoreDbContext> context) : base(context) { }
 

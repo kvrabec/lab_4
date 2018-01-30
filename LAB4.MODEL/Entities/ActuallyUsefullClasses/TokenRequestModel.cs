@@ -8,5 +8,10 @@ namespace LAB4.MODEL.Entities.ActuallyUsefullClasses
     {
         public string FirstName { get; set; }
         public string AccountNumber { get; set; }
+        public string Rowguid { get; set; }
+        public Customer Customer { get; set; }
+
+        public TokenRequestModel()
+        { }
     }
 }

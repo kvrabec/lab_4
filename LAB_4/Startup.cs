@@ -15,6 +15,9 @@ using Microsoft.EntityFrameworkCore;
 using LAB4.MODEL.Entities;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 namespace LAB_4
 {
@@ -57,6 +60,32 @@ namespace LAB_4
                     options.UseSqlServer(Configuration["connStr"]));
 
             services.AddSingleton<IConfiguration>(Configuration);
+
+            services.AddApiVersioning(options =>
+            {
+                options.ReportApiVersions = true;                       
+                options.AssumeDefaultVersionWhenUnspecified = true;     
+                options.DefaultApiVersion = new ApiVersion(1, 1);       
+                options.ApiVersionReader = new HeaderApiVersionReader("api-version");  
+            });
+
+            //services.UseApiVersioning();
+
+            // Register the Swagger generator, defining one or more Swagger documents
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1.0", new Info { Title = "Customer API", Version = "v1.0" }); 
+                options.SwaggerDoc("v1.1", new Info { Title = "Customer API", Version = "v1.1" });
+
+                options.DocInclusionPredicate((docName, apiDesc) =>
+                {
+                    var versions = apiDesc.ControllerAttributes()
+                                        .OfType<ApiVersionAttribute>()
+                                        .SelectMany(attr => attr.Versions);
+
+                    return versions.Any(v => $"v{v.ToString()}" == docName);
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,6 +95,16 @@ namespace LAB_4
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "Customer API V1.0");
+                c.SwaggerEndpoint("/swagger/v1.1/swagger.json", "Customer API V1.1");
+            });
 
             app.UseAuthentication();
 
